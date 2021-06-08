@@ -75,7 +75,11 @@ const createNewBlock = (data:string) : Block => {
         return newBlock;
 };
 
+// Block의 Hash가 유효한지 검증하는 함수
+const getHashforBlock = (aBlock: Block) :string => Block.calculateBlockHash(aBlock.index, aBlock.previousHash, aBlock.data, aBlock.timestamp);
+
 // 제공되고 있는 블록이 유효한지 아닌지 판단하는 함수
+// 이전의 블록과 비교한다.
 const isBlockValid = (candiateBlock : Block, previousBlock: Block) : boolean => {
     // 블록의 구조가 유효한지 체크
     // candidate블록, previous블록을 받고 유효하지 않으면 False를 return
@@ -85,6 +89,17 @@ const isBlockValid = (candiateBlock : Block, previousBlock: Block) : boolean => 
         return false;
     } else if(previousBlock.hash !== candiateBlock.previousHash){
         return false;
+    } else if(getHashforBlock(candiateBlock) !== candiateBlock.hash){
+        return false;
     }
-    return true;
+    else {
+        return true;
+    }
 };
+
+// 이 함수는 아무것도 return하지 않기 때문에 return type을 void로 설정
+const addBlock = (candidateBlock: Block) : void => {
+    if(isBlockValid(candidateBlock, getLatestBlock())){
+        blockchain.push(candidateBlock);
+    }
+}
