@@ -1,10 +1,5 @@
 import * as CryptoJS from "crypto-js";
 class Block {
-    public index: number;
-    public hash: string;
-    public previousHash: string;
-    public data: string;
-    public timestamp: number;
 
     // Block 클래스 안에서 항상 사용 가능한 함수
     // 원래 Block클래스 안에서 함수를 만들게되면 블록을 생성했을때만 사용이 가능하다.
@@ -16,6 +11,19 @@ class Block {
         data: string,
         timestamp: number
         ): string => CryptoJS.SHA256(index + previousHash + data + timestamp).toString();
+
+    static validateStructure = (aBlock: Block) : boolean =>   // 리턴값은 boolean인 이유는, 블록의 구조가 유효한지 아닌지 판단하기 위해서(구조가 맞으면 True, 틀리면 False)
+        typeof aBlock.index === "number" &&
+        typeof aBlock.hash === "string" &&
+        typeof aBlock.previousHash === "string" &&
+        typeof aBlock.timestamp === "number" &&
+        aBlock.data === "string";
+
+    public index: number;
+    public hash: string;
+    public previousHash: string;
+    public data: string;
+    public timestamp: number;
 
     constructor(
         index: number,
@@ -66,4 +74,17 @@ const createNewBlock = (data:string) : Block => {
         );
         return newBlock;
 };
-console.log(createNewBlock("hello"), createNewBlock("byebye"));
+
+// 제공되고 있는 블록이 유효한지 아닌지 판단하는 함수
+const isBlockValid = (candiateBlock : Block, previousBlock: Block) : boolean => {
+    // 블록의 구조가 유효한지 체크
+    // candidate블록, previous블록을 받고 유효하지 않으면 False를 return
+    if(!Block.validateStructure(candiateBlock)){
+        return false;
+    } else if(previousBlock.index + 1 !== candiateBlock.index){
+        return false;
+    } else if(previousBlock.hash !== candiateBlock.previousHash){
+        return false;
+    }
+    return true;
+};
