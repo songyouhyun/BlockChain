@@ -79,7 +79,7 @@ const createNewBlock = (data:string) : Block => {
 const getHashforBlock = (aBlock: Block) :string => Block.calculateBlockHash(aBlock.index, aBlock.previousHash, aBlock.data, aBlock.timestamp);
 
 // 제공되고 있는 블록이 유효한지 아닌지 판단하는 함수
-// 이전의 블록과 비교한다.
+// 이전의 블록과 비교한다. (candidate : 후보자)
 const isBlockValid = (candiateBlock : Block, previousBlock: Block) : boolean => {
     // 블록의 구조가 유효한지 체크
     // candidate블록, previous블록을 받고 유효하지 않으면 False를 return
