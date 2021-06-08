@@ -8,39 +8,39 @@ class Block {
     static calculateBlockHash = (
         index: number,
         previousHash: string,
-        data: string,
-        timestamp: number
-        ): string => CryptoJS.SHA256(index + previousHash + data + timestamp).toString();
+        timestamp: number,
+        data: string
+        ): string => CryptoJS.SHA256(index + previousHash + timestamp + data).toString();
 
     static validateStructure = (aBlock: Block) : boolean =>   // 리턴값은 boolean인 이유는, 블록의 구조가 유효한지 아닌지 판단하기 위해서(구조가 맞으면 True, 틀리면 False)
         typeof aBlock.index === "number" &&
         typeof aBlock.hash === "string" &&
         typeof aBlock.previousHash === "string" &&
         typeof aBlock.timestamp === "number" &&
-        aBlock.data === "string";
+        typeof aBlock.data === "string";
 
     public index: number;
     public hash: string;
     public previousHash: string;
-    public data: string;
     public timestamp: number;
+    public data: string;
 
     constructor(
         index: number,
         hash: string,
         previousHash: string,
-        data: string,
-        timestamp: number
-    ) {
+        timestamp: number,
+        data: string
+        ) {
         this.index = index;
         this.hash = hash;
         this.previousHash = previousHash;
-        this.data = data;
         this.timestamp = timestamp
+        this.data = data;
     }
 }
 
-const genesisBlock: Block = new Block(0, "answlgP", "", "HelloWorld",213985);
+const genesisBlock: Block = new Block(0, "thddbgus", "", 12345,"HelloWolrd");
 
 let blockchain: Block[] = [genesisBlock];
 
@@ -62,21 +62,22 @@ const createNewBlock = (data:string) : Block => {
     const newHash: string = Block.calculateBlockHash(
         newIndex,
         previousBlock.hash,
-        data,
-        newTimestamp
+        newTimestamp,
+        data
         );
         const newBlock : Block = new Block(
         newIndex,
         newHash,
         previousBlock.hash,
-        data,
-        newTimestamp
+        newTimestamp,
+        data
         );
+        addBlock(newBlock);
         return newBlock;
 };
 
 // Block의 Hash가 유효한지 검증하는 함수
-const getHashforBlock = (aBlock: Block) :string => Block.calculateBlockHash(aBlock.index, aBlock.previousHash, aBlock.data, aBlock.timestamp);
+const getHashforBlock = (aBlock: Block) :string => Block.calculateBlockHash(aBlock.index, aBlock.previousHash, aBlock.timestamp, aBlock.data);
 
 // 제공되고 있는 블록이 유효한지 아닌지 판단하는 함수
 // 이전의 블록과 비교한다. (candidate : 후보자)
@@ -97,9 +98,16 @@ const isBlockValid = (candiateBlock : Block, previousBlock: Block) : boolean => 
     }
 };
 
+// addBlock을 CreateNewBlock에 연결
 // 이 함수는 아무것도 return하지 않기 때문에 return type을 void로 설정
 const addBlock = (candidateBlock: Block) : void => {
     if(isBlockValid(candidateBlock, getLatestBlock())){
         blockchain.push(candidateBlock);
     }
-}
+};
+
+createNewBlock("second block");
+createNewBlock("third block");
+createNewBlock("fourth block");
+
+console.log(blockchain);
